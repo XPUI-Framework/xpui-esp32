@@ -1,0 +1,36 @@
+# Cargo reads this file only when it is invoked from this directory or below,
+# so it changes nothing for the workspace root — which is what keeps the gates
+# there building this crate for the host, as they build every other member.
+#
+# No `[build] target` here, unlike `examples/rp2040`: the two boards are two
+# different architectures, so there is no single default to pick. Name the
+# target and the board's feature together:
+#
+#   cargo build --release --bin x3     --features x3     --target riscv32imc-unknown-none-elf
+#   cargo +esp build --release --bin sticky --features sticky --target xtensa-esp32s3-none-elf
+#
+# `esp-hal`'s linker script is asked for in `build.rs` rather than here, so a
+# build from the workspace root gets it too. What is left is flashing, and a
+# codegen flag that cannot come from a build script.
+
+[target.riscv32imc-unknown-none-elf]
+runner = "espflash flash --monitor --chip esp32c3"
+rustflags = ["-C", "force-frame-pointers"]
+
+# **No `force-frame-pointers` on Xtensa.** With it, the `esp` fork's LLVM
+# fails to build `compiler_builtins` outright:
+#
+#   Error while trying to spill A8 from class AR:
+#   Cannot scavenge register without an emergency spill slot!
+#
+# Xtensa's windowed register file has little to spare, and pinning a frame
+# pointer takes the register the allocator needed. The C3 keeps the flag; this
+# board does without the nicer backtraces.
+[target.xtensa-esp32s3-none-elf]
+runner = "espflash flash --monitor --chip esp32s3"
+
+# Xtensa has no precompiled `core`, so it is built from source. This applies
+# only under the `esp` toolchain — cargo silently ignores `[unstable]` on
+# stable, so it is a no-op for the RISC-V board rather than a trap.
+[unstable]
+build-std = ["core", "alloc"]

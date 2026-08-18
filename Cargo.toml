@@ -1,0 +1,100 @@
+[package]
+name = "xpui-esp32"
+description = "The xpui gallery as ESP32 firmware, for the Xteink X3 and the Seeed Sticky"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+# `test`/`bench` off everywhere, as in `examples/rp2040`: a test harness needs
+# libtest, which neither bare-metal target has, so leaving them on makes
+# `--all-targets` fail on the only targets this crate compiles for. What is
+# testable lives in `xpui` and in the gallery, both tested on the host.
+[lib]
+name = "xpui_esp32"
+path = "src/lib.rs"
+test = false
+bench = false
+
+# One binary per board, and **each needs its own feature**, because the chip is
+# a feature of `esp-hal` rather than a target: two binaries in one crate cannot
+# select different ones on their own. `required-features` is what stops
+# `cargo build --bins` trying to build both against whichever chip won.
+[[bin]]
+name = "x3"
+path = "src/bin/x3.rs"
+required-features = ["x3"]
+test = false
+bench = false
+
+[[bin]]
+name = "sticky"
+path = "src/bin/sticky.rs"
+required-features = ["sticky"]
+test = false
+bench = false
+
+[features]
+# **Exactly one board at a time.** `--all-features` enables both, which is two
+# chips and two architectures; the build then fails inside
+# `esp-metadata-generated` rather than here, because cargo compiles
+# dependencies first. See the note in `src/lib.rs`.
+#
+# Xteink X3 — ESP32-C3, RISC-V, a target stable Rust has.
+x3 = ["esp32c3"]
+# Seeed Sticky — ESP32-S3, Xtensa, which stable Rust cannot target at all.
+sticky = ["esp32s3"]
+
+# The chip, threaded through every crate that needs to know it. Named
+# separately from the board so a second board on the same chip is one line.
+esp32c3 = [
+  "esp-hal/esp32c3",
+  "esp-alloc/esp32c3",
+  "esp-backtrace/esp32c3",
+  "esp-println/esp32c3",
+  "esp-bootloader-esp-idf/esp32c3",
+]
+esp32s3 = [
+  "esp-hal/esp32s3",
+  "esp-alloc/esp32s3",
+  "esp-backtrace/esp32s3",
+  "esp-println/esp32s3",
+  "esp-bootloader-esp-idf/esp32s3",
+]
+
+# Bare metal only, which is the only place this crate has anything to compile.
+# The workspace's gates build every member for the host they run on, and an
+# ESP32 HAL does not compile for a laptop — so behind this cfg the dependencies
+# are not even resolved there. `build.rs` turns on a matching `device` cfg and
+# the source is gated to match, leaving an empty crate on the host.
+[target.'cfg(target_os = "none")'.dependencies]
+xpui.workspace = true
+xpui-boards.workspace = true
+xpui-chrome.workspace = true
+# `critical-section` on for the same reason `examples/rp2040` has it: this is a
+# device, and an interrupt handler could plausibly reach the backend. The
+# implementation comes from `esp-hal`, not from here.
+xpui-embedded-graphics = { workspace = true, features = ["critical-section"] }
+
+# The screens. The same crate the desktop simulator runs, with nothing
+# device-specific in it.
+xpui-gallery = { path = "../gallery" }
+
+embedded-graphics = "0.8"
+
+# `unstable` for `esp_hal::delay`, which is behind that gate in 1.1.
+#
+# esp-hal's own documentation says never to enable this in a *library* crate
+# using esp-hal, because it leaks an unstable surface to whoever depends on it.
+# This is an example firmware that nothing depends on, which is the case the
+# gate is drawn around — `pulp-os` next door does the same at its binary.
+esp-hal = { version = "1.1", features = ["unstable"] }
+esp-alloc = "0.10"
+# **`println` is not optional**: this crate's build script fails outright
+# unless exactly one of `defmt` or `println` is enabled, and says so.
+esp-backtrace = { version = "0.19", features = ["panic-handler", "println"] }
+esp-println = "0.17"
+# Supplies the application descriptor the second-stage bootloader looks for.
+esp-bootloader-esp-idf = "0.5"
