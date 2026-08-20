@@ -42,7 +42,10 @@ where
     // Safety: one panel, one thread, and nothing has rendered yet.
     unsafe { xpui::host::install(backend) };
 
-    let mut app = App::new(root);
+    let mut app = App::new(root)
+        // Nothing owns a screen under this one, as on any device: the root
+        // declines to finish rather than the loop dropping Back at the pin.
+        .keep_root();
 
     // Painted once, or an e-ink panel holds whatever survived reset — which is
     // not a blank screen, it is the previous firmware's last frame.
