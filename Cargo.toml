@@ -72,7 +72,6 @@ esp32s3 = [
 [target.'cfg(target_os = "none")'.dependencies]
 xpui.workspace = true
 xpui-boards.workspace = true
-xpui-chrome.workspace = true
 # `critical-section` on for the same reason `examples/rp2040` has it: this is a
 # device, and an interrupt handler could plausibly reach the backend. The
 # implementation comes from `esp-hal`, not from here.
