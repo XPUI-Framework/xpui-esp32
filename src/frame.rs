@@ -14,7 +14,7 @@ use esp_hal::time::Instant;
 use gallery::wire;
 use xpui::App;
 use xpui::screen::Screen;
-use xpui_boards::Board;
+use xpui_boards_core::Board;
 use xpui_eg::{Backend, Palette};
 
 use crate::Panel;

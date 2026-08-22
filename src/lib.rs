@@ -9,7 +9,7 @@
 //!
 //! The screens come from `examples/gallery`, unchanged — the same library the
 //! desktop simulator opens and the RP2040 binaries flash. What differs between
-//! all four is a [`Board`](xpui_boards::Board) and an entry point.
+//! all four is a [`Board`](xpui_boards_core::Board) and an entry point.
 //!
 //! **There is no panel driver.** See [`panel`] for why, and for the one
 //! function a firmware fills in.

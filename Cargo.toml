@@ -71,7 +71,10 @@ esp32s3 = [
 # the source is gated to match, leaving an empty crate on the host.
 [target.'cfg(target_os = "none")'.dependencies]
 xpui.workspace = true
-xpui-boards.workspace = true
+# The two vendors these binaries flash, and no others.
+xpui-boards-core.workspace = true
+xpui-boards-seeed.workspace = true
+xpui-boards-xteink.workspace = true
 # `critical-section` on for the same reason `examples/rp2040` has it: this is a
 # device, and an interrupt handler could plausibly reach the backend. The
 # implementation comes from `esp-hal`, not from here.

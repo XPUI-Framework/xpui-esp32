@@ -26,7 +26,7 @@
 use {
     esp_hal::main,
     gallery::Menu,
-    xpui_boards::Board,
+    xpui_boards_seeed as seeed,
     xpui_esp32::{Panel, init_heap, run},
 };
 
@@ -38,13 +38,13 @@ esp_bootloader_esp_idf::esp_app_desc!();
 
 /// One bit per pixel, sized **from the board** rather than restated here.
 ///
-/// `Board::STICKY` is a `const`, so this is computed at compile time — and a
+/// `seeed::STICKY` is a `const`, so this is computed at compile time — and a
 /// panel size corrected in `crates/boards` cannot leave a firmware with a
 /// framebuffer one row short, which would draw fine and corrupt whatever
 /// follows it.
 #[cfg(device)]
 const FRAMEBUFFER_BYTES: usize =
-    (Board::STICKY.width as usize).div_ceil(8) * Board::STICKY.height as usize;
+    (seeed::STICKY.width as usize).div_ceil(8) * seeed::STICKY.height as usize;
 
 #[cfg(device)]
 #[main]
@@ -53,8 +53,8 @@ fn start() -> ! {
 
     let _peripherals = esp_hal::init(esp_hal::Config::default());
 
-    let panel = Panel::<FRAMEBUFFER_BYTES>::new(Board::STICKY.width, Board::STICKY.height);
-    run(panel, Board::STICKY, Menu::new())
+    let panel = Panel::<FRAMEBUFFER_BYTES>::new(seeed::STICKY.width, seeed::STICKY.height);
+    run(panel, seeed::STICKY, Menu::new())
 }
 
 #[cfg(not(device))]

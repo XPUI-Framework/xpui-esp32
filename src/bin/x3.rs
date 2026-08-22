@@ -19,7 +19,7 @@
 use {
     esp_hal::main,
     gallery::Menu,
-    xpui_boards::Board,
+    xpui_boards_xteink as xteink,
     xpui_esp32::{Panel, init_heap, run},
 };
 
@@ -33,12 +33,13 @@ esp_bootloader_esp_idf::esp_app_desc!();
 
 /// One bit per pixel, sized **from the board** rather than restated here.
 ///
-/// `Board::X3` is a `const`, so this is computed at compile time — and a
+/// `xteink::X3` is a `const`, so this is computed at compile time — and a
 /// panel size corrected in `crates/boards` cannot leave a firmware with a
 /// framebuffer one row short, which would draw fine and corrupt whatever
 /// follows it.
 #[cfg(device)]
-const FRAMEBUFFER_BYTES: usize = (Board::X3.width as usize).div_ceil(8) * Board::X3.height as usize;
+const FRAMEBUFFER_BYTES: usize =
+    (xteink::X3.width as usize).div_ceil(8) * xteink::X3.height as usize;
 
 #[cfg(device)]
 #[main]
@@ -48,8 +49,8 @@ fn start() -> ! {
 
     let _peripherals = esp_hal::init(esp_hal::Config::default());
 
-    let panel = Panel::<FRAMEBUFFER_BYTES>::new(Board::X3.width, Board::X3.height);
-    run(panel, Board::X3, Menu::new())
+    let panel = Panel::<FRAMEBUFFER_BYTES>::new(xteink::X3.width, xteink::X3.height);
+    run(panel, xteink::X3, Menu::new())
 }
 
 // Off the device this file is empty, and `main` still has to exist for the
