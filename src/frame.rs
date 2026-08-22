@@ -11,6 +11,7 @@
 
 use esp_hal::delay::Delay;
 use esp_hal::time::Instant;
+use gallery::wire;
 use xpui::App;
 use xpui::screen::Screen;
 use xpui_boards::Board;
@@ -38,7 +39,7 @@ where
 {
     // Sized from the board, so a screen developed in the simulator window and
     // the same screen here lay out against identical numbers.
-    let backend = Backend::leak_for_board(panel, board, Palette::INK_IS_ON);
+    let backend = wire(panel, board, Palette::INK_IS_ON).leaked();
     // Safety: one panel, one thread, and nothing has rendered yet.
     unsafe { xpui::host::install(backend) };
 
