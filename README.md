@@ -89,6 +89,10 @@ Nothing depends on this repository. It is a leaf: an image, for two boards.
 ./build-and-test.sh all      # plus linking both images
 ```
 
+The checks themselves are in [`xtask/`](xtask/) — this repository's own list,
+in Rust, holding nothing it does not run. `./build-and-test.sh fix` formats
+in place first.
+
 ## Where it sits
 
 Every arrow is a dependency in a `Cargo.toml`, and they all point inward
