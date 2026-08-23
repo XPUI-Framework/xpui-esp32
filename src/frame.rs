@@ -6,8 +6,8 @@
 //!
 //! When a panel driver arrives, this is where it changes:
 //! [`Panel::present`](crate::Panel::present) becomes a real flush, and if that
-//! flush suspends, `Backend::loan_display` is what lets it — see
-//! `examples/rp2040/src/frame.rs::run_async`.
+//! flush suspends, `Backend::loan_display` is what lets it — the RP2040
+//! firmware's `run_async` is the worked example.
 
 use esp_hal::delay::Delay;
 use esp_hal::time::Instant;
