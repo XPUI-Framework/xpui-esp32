@@ -40,6 +40,16 @@ HOST_WORKSPACE=1
 LINT_TARGETS=("riscv32imc-unknown-none-elf")
 LINT_TARGET_CRATES=(--bin x3 --features x3)
 
+# The firmware has no tests, and cannot on a host.
+#
+# `test = false` on every target, because libtest does not exist for
+# `riscv32imc-unknown-none-elf`. What is unreachable from a laptop is the glue:
+# panel init, the frame loop, the allocator, the panic handler. The screens are
+# `xpui-gallery`'s and are snapshotted seventy ways there.
+UNTESTED_CRATES=(
+  ".:the firmware; test = false, and esp-hal cannot compile for a laptop"
+)
+
 . bin/gate-common.sh
 
 # ---------------------------------------------------------------------------
@@ -87,6 +97,7 @@ esp32_s3_links() {
 
 gates() {
   file_sizes
+  crates_are_tested
   every_check_runs
   readmes_warn
   prose_is_compiled
