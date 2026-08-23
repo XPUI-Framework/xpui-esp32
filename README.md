@@ -21,13 +21,19 @@ cargo +esp build --release --bin sticky --features sticky --target xtensa-esp32s
 `--features` is not optional: the chip is a feature of `esp-hal` rather than a
 target, so two binaries in one crate cannot each choose their own.
 
-## There is no panel driver
+## Everything but the last inch
 
-[`src/panel.rs`](src/panel.rs) owns the framebuffer and stops at one function,
-`Panel::present`. That is where a driver goes, and there is none for a reason
-worth stating rather than linking away.
+Real and exercised by the build: the board's geometry, the chrome sized from
+it, the frame loop, the allocator, the panic handler, and the whole gallery
+laid out for the right panel. The firmware reports its ink count over the
+serial port, which is how you can tell a frame reached pixels rather than
+stopping in layout.
 
-**No published Rust or C++ driver exists for these panels.** The RP2040 boards
+[`src/panel.rs`](src/panel.rs) owns the framebuffer and hands off at one
+function, `Panel::present`. **That is where a panel driver goes**, and it is
+marked rather than faked, for a reason worth having in front of you.
+
+No published Rust or C++ driver exists for these panels. The RP2040 boards
 could name `uc8151` and `mipidsi` because those are published crates; the X3
 and the Sticky have no equivalent. The nearest working code is a hand-written
 682-line SSD1677 driver in an unrelated project, tested against one specific
@@ -64,6 +70,69 @@ Three things that cost a build each:
   `.cargo/config.toml`, so a build from the workspace root gets it too.
 - **`-C force-frame-pointers` breaks the Xtensa build**, in LLVM, while
   compiling `compiler_builtins`. The C3 keeps it.
+
+## What it depends on
+
+The screens come from [`xpui-gallery`](https://github.com/XPUI-Framework/xpui-gallery) — the same library
+the desktop simulator and the RP2040 firmware draw, which is the point: a
+screen is written once. The board's measurements come from
+[`xpui-boards`](https://github.com/XPUI-Framework/xpui-boards), the painting from
+[`xpui-backends`](https://github.com/XPUI-Framework/xpui-backends)' `embedded_graphics`, and the framework
+from [`xpui`](https://github.com/XPUI-Framework/xpui-framework).
+
+Nothing depends on this repository. It is a leaf: an image, for two boards.
+
+## Checking it
+
+```bash
+./build-and-test.sh          # format, lint for RISC-V, and the prose
+./build-and-test.sh all      # plus linking both images
+```
+
+## Where it sits
+
+Every arrow is a dependency in a `Cargo.toml`, and they all point inward
+toward `xpui`, which depends on nothing at all. That is the rule the
+organisation is arranged around: a backend can be written without the framework
+knowing it exists, and a firmware reaches whatever it needs directly rather
+than through whoever happens to sit above it.
+
+```mermaid
+flowchart BT
+  xpui["xpui<br/>the framework"]
+  chrome["xpui-chrome<br/>components"]
+  boards["xpui-boards<br/>seven devices"]
+  backends["xpui-backends<br/>two backends"]
+  simulator["xpui-simulator<br/>a window"]
+  gallery["xpui-gallery<br/>the app"]
+  rp2040["xpui-rp2040<br/>firmware"]
+  esp32["xpui-esp32<br/>firmware"]
+  cpp["xpui-cpp<br/>a C++ host"]
+  chrome --> xpui
+  boards --> xpui
+  backends --> xpui
+  backends --> chrome
+  simulator --> xpui
+  simulator --> chrome
+  simulator --> boards
+  simulator --> backends
+  gallery --> xpui
+  gallery --> chrome
+  gallery --> boards
+  gallery --> backends
+  gallery --> simulator
+  rp2040 --> xpui
+  rp2040 --> boards
+  rp2040 --> backends
+  rp2040 --> gallery
+  esp32 --> xpui
+  esp32 --> boards
+  esp32 --> backends
+  esp32 --> gallery
+  cpp --> xpui
+  cpp --> backends
+  style esp32 stroke-width:3px
+```
 
 ## License
 
