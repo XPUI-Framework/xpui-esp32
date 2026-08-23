@@ -1,5 +1,8 @@
 # The gallery, as ESP32 firmware
 
+> ⚠️ **Under heavy development.** Not production-ready. The API can break
+> without notice. Use at your own risk.
+
 Two boards on two architectures, running the same screens the desktop
 simulator opens and the RP2040 binaries flash.
 
