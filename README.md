@@ -25,7 +25,7 @@ target, so two binaries in one crate cannot each choose their own.
 
 [`src/panel.rs`](src/panel.rs) owns the framebuffer and stops at one function,
 `Panel::present`. That is where a driver goes, and why there is none is
-[`docs/devices.md`](../../docs/devices.md#the-panel-drivers) — including what
+[`docs/devices.md`](https://github.com/XPUI-Framework/xpui-framework/blob/main/docs/devices.md#the-panel-drivers) — including what
 you would need if you want to write one.
 
 Everything above that line is real and is exercised by the build: the board's
@@ -39,7 +39,7 @@ What is missing is the last step, and it is marked rather than faked.
 ## What the build taught us
 
 Three things that cost a build each, all recorded in
-[`docs/devices.md`](../../docs/devices.md):
+[`docs/devices.md`](https://github.com/XPUI-Framework/xpui-framework/blob/main/docs/devices.md):
 
 - `esp-backtrace` fails its own build script unless exactly one of `defmt` or
   `println` is enabled, and says so.
