@@ -20,10 +20,10 @@ target, so two binaries in one crate cannot each choose their own.
 
 ## There is no panel driver
 
-The RP2040 example names `uc8151` and `mipidsi` because those are published
-crates for the panels those boards carry. **For these two there is no such
-crate.** [`src/panel.rs`](src/panel.rs) owns the framebuffer and stops at one
-function, `Panel::present`, where a driver goes.
+[`src/panel.rs`](src/panel.rs) owns the framebuffer and stops at one function,
+`Panel::present`. That is where a driver goes, and why there is none is
+[`docs/devices.md`](../../docs/devices.md#the-panel-drivers) — including what
+you would need if you want to write one.
 
 Everything above that line is real and is exercised by the build: the board's
 geometry, the chrome sized from it, the frame loop, the allocator, the panic
