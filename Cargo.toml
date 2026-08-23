@@ -1,11 +1,11 @@
 [package]
 name = "xpui-esp32"
 description = "The xpui gallery as ESP32 firmware, for the Xteink X3 and the Seeed Sticky"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-authors.workspace = true
-repository.workspace = true
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Thiago Holanda <unnamedd@gmail.com>"]
+repository = "https://github.com/XPUI-Framework/xpui-esp32"
 publish = false
 
 # `test`/`bench` off everywhere, as in `examples/rp2040`: a test harness needs
@@ -70,19 +70,19 @@ esp32s3 = [
 # are not even resolved there. `build.rs` turns on a matching `device` cfg and
 # the source is gated to match, leaving an empty crate on the host.
 [target.'cfg(target_os = "none")'.dependencies]
-xpui.workspace = true
+xpui = { git = "https://github.com/XPUI-Framework/xpui-framework", branch = "main" }
 # The two vendors these binaries flash, and no others.
-xpui-boards-core.workspace = true
-xpui-boards-seeed.workspace = true
-xpui-boards-xteink.workspace = true
+xpui-boards-core = { git = "https://github.com/XPUI-Framework/xpui-boards", branch = "main" }
+xpui-boards-seeed = { git = "https://github.com/XPUI-Framework/xpui-boards", branch = "main" }
+xpui-boards-xteink = { git = "https://github.com/XPUI-Framework/xpui-boards", branch = "main" }
 # `critical-section` on for the same reason `examples/rp2040` has it: this is a
 # device, and an interrupt handler could plausibly reach the backend. The
 # implementation comes from `esp-hal`, not from here.
-xpui-embedded-graphics = { workspace = true, features = ["critical-section"] }
+xpui-embedded-graphics = { git = "https://github.com/XPUI-Framework/xpui-backends", branch = "main", features = ["critical-section"] }
 
 # The screens. The same crate the desktop simulator runs, with nothing
 # device-specific in it.
-xpui-gallery = { path = "../gallery" }
+xpui-gallery = { git = "https://github.com/XPUI-Framework/xpui-gallery", branch = "main" }
 
 embedded-graphics = "0.8"
 
@@ -100,3 +100,12 @@ esp-backtrace = { version = "0.19", features = ["panic-handler", "println"] }
 esp-println = "0.17"
 # Supplies the application descriptor the second-stage bootloader looks for.
 esp-bootloader-esp-idf = "0.5"
+
+[workspace]
+
+# Shared across every repository so host, RISC-V and Xtensa builds agree.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
