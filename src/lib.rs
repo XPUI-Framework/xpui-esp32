@@ -9,10 +9,16 @@
 //!
 //! The screens come from `examples/gallery`, unchanged — the same library the
 //! desktop simulator opens and the RP2040 binaries flash. What differs between
-//! all four is a [`Board`](xpui_boards_core::Board) and an entry point.
+//! all four is a `Board` and an entry point.
 //!
-//! **There is no panel driver.** See [`panel`] for why, and for the one
-//! function a firmware fills in.
+//! **There is no panel driver.** See the `panel` module for why, and for the
+//! one function a firmware fills in.
+//!
+//! Neither is a rustdoc link, and cannot be on the host: everything here is
+//! behind the `device` cfg, so there is no `panel` module to link to, and the
+//! boards crate is a bare-metal dependency that a host build never links. The
+//! gate renders these docs for the device too, where both would resolve — but
+//! a link that works in one of the two is a link that is broken in the other.
 //!
 //! Everything is behind a `device` cfg that `build.rs` turns on for bare metal
 //! only, so this is an empty crate on a laptop and the workspace's host gates
