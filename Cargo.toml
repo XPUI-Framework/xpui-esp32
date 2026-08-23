@@ -63,6 +63,8 @@ esp32s3 = [
   "esp-backtrace/esp32s3",
   "esp-println/esp32s3",
   "esp-bootloader-esp-idf/esp32s3",
+  # The peripheral access crate, pinned. See `[dependencies.esp32s3-pac]`.
+  "dep:esp32s3-pac",
 ]
 
 # Bare metal only, which is the only place this crate has anything to compile.
@@ -86,6 +88,20 @@ xpui-embedded-graphics = { git = "https://github.com/XPUI-Framework/xpui-backend
 xpui-gallery = { git = "https://github.com/XPUI-Framework/xpui-gallery", branch = "main" }
 
 embedded-graphics = "0.8"
+
+# **The Xtensa peripheral access crate, pinned to an exact version.**
+#
+# Nothing here calls it; `esp-hal` does. `esp-hal` 1.1.2 asks for `^0.35`, and
+# `esp32s3` 0.35.3 removed `ext_wakeup1_sel` and `ext_wakeup1_status_clr` from
+# `RTC_CNTL` — a breaking change in a patch release. `esp-hal` calls both, so
+# the image stops linking with an error inside somebody else's crate and no
+# hint that a version is the cause.
+#
+# Declared here, renamed, because a bare `Cargo.lock` entry is undone by the
+# next `cargo update` without a word. The rename avoids colliding with the
+# `esp32s3` feature above. Drop this when an `esp-hal` release names a newer
+# PAC, and check that both images still link before doing so.
+esp32s3-pac = { package = "esp32s3", version = "=0.35.2", optional = true }
 
 # `unstable` for `esp_hal::delay`, which is behind that gate in 1.1.
 #

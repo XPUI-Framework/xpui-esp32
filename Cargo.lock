@@ -789,9 +789,9 @@ dependencies = [
 
 [[package]]
 name = "esp32s3"
-version = "0.35.3"
+version = "0.35.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df93118bbf64bfd81f548075f42826e26e6818d81ffcf8feb03571b985abbc7b"
+checksum = "8b4b8c4e4d9f187553ecdb7173edec7b2deb2beea106eedefecdb1654b8ee25a"
 dependencies = [
  "vcell",
 ]
@@ -1719,6 +1719,7 @@ dependencies = [
  "esp-bootloader-esp-idf",
  "esp-hal",
  "esp-println",
+ "esp32s3",
  "xpui",
  "xpui-boards-core",
  "xpui-boards-seeed",
