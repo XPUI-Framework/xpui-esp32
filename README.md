@@ -64,3 +64,7 @@ Three things that cost a build each:
   `.cargo/config.toml`, so a build from the workspace root gets it too.
 - **`-C force-frame-pointers` breaks the Xtensa build**, in LLVM, while
   compiling `compiler_builtins`. The C3 keeps it.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Thiago Holanda.

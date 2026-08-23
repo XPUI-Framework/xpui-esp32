@@ -6,6 +6,7 @@ edition = "2024"
 license = "MIT"
 authors = ["Thiago Holanda <unnamedd@gmail.com>"]
 repository = "https://github.com/XPUI-Framework/xpui-esp32"
+readme = "README.md"
 publish = false
 
 # `test`/`bench` off everywhere, as in `examples/rp2040`: a test harness needs
@@ -103,9 +104,21 @@ esp-bootloader-esp-idf = "0.5"
 
 [workspace]
 
-# Shared across every repository so host, RISC-V and Xtensa builds agree.
+# Size over speed: flash is the scarce resource, not cycles.
+#
+# `"z"` rather than `"s"`, and this is the profile that actually ships —
+# whatever a dependency declares, the workspace at the top of the build wins.
 [profile.release]
-opt-level = "s"
+opt-level = "z"
 lto = true
 codegen-units = 1
 panic = "abort"
+
+# **No `strip`.** The monorepo's root profile set `strip = true` and both of
+# these inherited it; the extraction dropped it, and it stays dropped on
+# purpose. `xpui-rp2040` weighed the same choice and landed on
+# `strip = "debuginfo"` because probe-rs finds the RTT control block by symbol
+# and `true` deletes the table it looks in. The argument carries here: neither
+# of these boards has been run, so the first person to run one wants symbol
+# names in a backtrace more than they want a smaller file on the host. It
+# costs nothing on the part — a symbol table is in no loadable segment.
