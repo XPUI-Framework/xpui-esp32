@@ -100,20 +100,17 @@ gates() {
 
 case "${1:-check}" in
   check)
-    rust_format_check
-    cpp_format_check
+    run_all "${FORMAT_CHECK[@]}"
     gates
     printf '\nChecks passed. "./build-and-test.sh all" also links both images.\n'
     ;;
   fix)
-    rust_format_fix
-    cpp_format_fix
+    run_all "${FORMAT_FIX[@]}"
     gates
     printf '\nFormatted and checked.\n'
     ;;
   all)
-    rust_format_check
-    cpp_format_check
+    run_all "${FORMAT_CHECK[@]}"
     gates
     esp32_c3_links
     esp32_s3_links
