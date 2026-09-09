@@ -14,10 +14,10 @@
 //! fork, installed with `espup`, and `core` built from source because none is
 //! shipped.
 //!
-//! So this board is built by `./build-and-test.sh all`, which looks for the
-//! fork and skips loudly when it is missing. **CI does not build it** — it
-//! announces that it did not, and why. Installing the fork on every pull
-//! request would cost minutes for one board.
+//! **CI does not build it, and does not mention it**: installing the fork on
+//! every pull request would cost minutes for one board. On a laptop,
+//! `./build-and-test.sh all` looks for the fork and skips loudly when it is
+//! missing.
 
 #![cfg_attr(device, no_std)]
 #![cfg_attr(device, no_main)]
@@ -39,7 +39,7 @@ esp_bootloader_esp_idf::esp_app_desc!();
 /// One bit per pixel, sized **from the board** rather than restated here.
 ///
 /// `seeed::STICKY` is a `const`, so this is computed at compile time — and a
-/// panel size corrected in `crates/boards` cannot leave a firmware with a
+/// panel size corrected in `xpui-boards` cannot leave a firmware with a
 /// framebuffer one row short, which would draw fine and corrupt whatever
 /// follows it.
 #[cfg(device)]

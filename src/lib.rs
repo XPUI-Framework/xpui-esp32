@@ -7,22 +7,17 @@
 //! | `x3` | Xteink X3 | ESP32-C3 | `riscv32imc-unknown-none-elf` |
 //! | `sticky` | Seeed Sticky | ESP32-S3 | `xtensa-esp32s3-none-elf` |
 //!
-//! The screens come from `examples/gallery`, unchanged — the same library the
+//! The screens come from `xpui-gallery`, unchanged — the same library the
 //! desktop simulator opens and the RP2040 binaries flash. What differs between
 //! all four is a `Board` and an entry point.
 //!
 //! **There is no panel driver.** See the `panel` module for why, and for the
 //! one function a firmware fills in.
 //!
-//! Neither is a rustdoc link, and cannot be on the host: everything here is
-//! behind the `device` cfg, so there is no `panel` module to link to, and the
-//! boards crate is a bare-metal dependency that a host build never links. The
-//! gate renders these docs for the device too, where both would resolve — but
-//! a link that works in one of the two is a link that is broken in the other.
-//!
 //! Everything is behind a `device` cfg that `build.rs` turns on for bare metal
 //! only, so this is an empty crate on a laptop and the workspace's host gates
-//! build it as one.
+//! build it as one. That is also why neither `panel` nor `Board` above is a
+//! rustdoc link: a link that resolves on the device is broken on the host.
 //!
 //! # `--all-features` cannot work here
 //!

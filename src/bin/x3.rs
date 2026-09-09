@@ -2,15 +2,15 @@
 //!
 //! ESP32-C3, RISC-V, and the densest panel this framework describes: 528x792
 //! at 257 ppi, held portrait. A button board with no touchscreen, so it keeps
-//! the baseline chrome — its 40px list row is 3.9 mm, the smallest of the five
-//! Xteink profiles, and deliberately so.
+//! the baseline chrome — its 40px list row is 3.9 mm, the smallest of the
+//! seven boards this framework describes, and deliberately so.
 //!
 //! ```bash
 //! cargo build --release --bin x3 --features x3 --target riscv32imc-unknown-none-elf
 //! ```
 //!
 //! Stable Rust targets this chip, so it needs no toolchain of its own — which
-//! is why CI builds this one and only announces the Sticky.
+//! is why CI checks this one and never mentions the Sticky.
 
 #![cfg_attr(device, no_std)]
 #![cfg_attr(device, no_main)]
@@ -34,7 +34,7 @@ esp_bootloader_esp_idf::esp_app_desc!();
 /// One bit per pixel, sized **from the board** rather than restated here.
 ///
 /// `xteink::X3` is a `const`, so this is computed at compile time — and a
-/// panel size corrected in `crates/boards` cannot leave a firmware with a
+/// panel size corrected in `xpui-boards` cannot leave a firmware with a
 /// framebuffer one row short, which would draw fine and corrupt whatever
 /// follows it.
 #[cfg(device)]

@@ -5,10 +5,10 @@
 
 /// How much of the chip's SRAM `xpui` gets.
 ///
-/// It has to hold the stack of live screens and the view tree `body()` rebuilds
-/// on every frame that carries input. The panel's framebuffer is **not** in
-/// here — it is a `const`-sized array in `.bss`, which is why 64 kB is enough
-/// on a chip that has 400.
+/// It holds the leaked backend — and with it the panel's framebuffer: 52,272
+/// bytes on the X3, 48,000 on the Sticky, four fifths of this — the stack of
+/// live screens, and the view tree `body()` rebuilds on every frame that
+/// carries input. Raise it before adding a screen that buffers anything.
 const HEAP_SIZE: usize = 64 * 1024;
 
 /// Hands the allocator its memory. Call once, before anything allocates.

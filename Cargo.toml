@@ -9,10 +9,12 @@ repository = "https://github.com/XPUI-Framework/xpui-esp32"
 readme = "README.md"
 publish = false
 
-# `test`/`bench` off everywhere, as in `examples/rp2040`: a test harness needs
-# libtest, which neither bare-metal target has, so leaving them on makes
-# `--all-targets` fail on the only targets this crate compiles for. What is
-# testable lives in `xpui` and in the gallery, both tested on the host.
+[lints]
+workspace = true
+
+# `test`/`bench` off everywhere, as in `xpui-rp2040`: neither bare-metal
+# target has libtest, so leaving them on makes `--all-targets` fail on the
+# only targets this crate compiles for.
 [lib]
 name = "xpui_esp32"
 path = "src/lib.rs"
@@ -67,18 +69,17 @@ esp32s3 = [
   "dep:esp32s3-pac",
 ]
 
-# Bare metal only, which is the only place this crate has anything to compile.
-# The workspace's gates build every member for the host they run on, and an
-# ESP32 HAL does not compile for a laptop — so behind this cfg the dependencies
-# are not even resolved there. `build.rs` turns on a matching `device` cfg and
-# the source is gated to match, leaving an empty crate on the host.
+# Bare metal only: the gate builds every member for the host it runs on, and
+# an ESP32 HAL does not compile for a laptop, so behind this cfg the
+# dependencies are not even resolved there. `build.rs` turns on a matching
+# `device` cfg and the source is gated to match.
 [target.'cfg(target_os = "none")'.dependencies]
 xpui = { git = "https://github.com/XPUI-Framework/xpui-framework", branch = "main" }
 # The two vendors these binaries flash, and no others.
 xpui-boards-core = { git = "https://github.com/XPUI-Framework/xpui-boards", branch = "main" }
 xpui-boards-seeed = { git = "https://github.com/XPUI-Framework/xpui-boards", branch = "main" }
 xpui-boards-xteink = { git = "https://github.com/XPUI-Framework/xpui-boards", branch = "main" }
-# `critical-section` on for the same reason `examples/rp2040` has it: this is a
+# `critical-section` on for the same reason `xpui-rp2040` has it: this is a
 # device, and an interrupt handler could plausibly reach the backend. The
 # implementation comes from `esp-hal`, not from here.
 xpui-embedded-graphics = { git = "https://github.com/XPUI-Framework/xpui-backends", branch = "main", features = ["critical-section"] }
@@ -89,26 +90,18 @@ xpui-gallery = { git = "https://github.com/XPUI-Framework/xpui-gallery", branch 
 
 embedded-graphics = "0.8"
 
-# **The Xtensa peripheral access crate, pinned to an exact version.**
-#
-# Nothing here calls it; `esp-hal` does. `esp-hal` 1.1.2 asks for `^0.35`, and
-# `esp32s3` 0.35.3 removed `ext_wakeup1_sel` and `ext_wakeup1_status_clr` from
-# `RTC_CNTL` — a breaking change in a patch release. `esp-hal` calls both, so
-# the image stops linking with an error inside somebody else's crate and no
-# hint that a version is the cause.
-#
-# Declared here, renamed, because a bare `Cargo.lock` entry is undone by the
-# next `cargo update` without a word. The rename avoids colliding with the
-# `esp32s3` feature above. Drop this when an `esp-hal` release names a newer
-# PAC, and check that both images still link before doing so.
+# **The Xtensa peripheral access crate, pinned to an exact version.** Nothing
+# here calls it; `esp-hal` 1.1.2 asks for `^0.35`, and `esp32s3` 0.35.3
+# renamed two `RTC_CNTL` fields `esp-hal` calls, so `esp-hal` stops compiling
+# with an error inside somebody else's crate. Declared here, renamed, because
+# a bare `Cargo.lock` entry is undone by the next `cargo update`; the rename
+# avoids the `esp32s3` feature above. Drop it when an `esp-hal` release names
+# a newer PAC, and check that both images still link.
 esp32s3-pac = { package = "esp32s3", version = "=0.35.2", optional = true }
 
-# `unstable` for `esp_hal::delay`, which is behind that gate in 1.1.
-#
-# esp-hal's own documentation says never to enable this in a *library* crate
-# using esp-hal, because it leaks an unstable surface to whoever depends on it.
-# This is an example firmware that nothing depends on, which is the case the
-# gate is drawn around — `pulp-os` next door does the same at its binary.
+# `unstable` for `esp_hal::delay`, which is behind that gate in 1.1. esp-hal
+# says never to enable this in a *library* crate, because it leaks an unstable
+# surface to dependants; this is a firmware nothing depends on.
 esp-hal = { version = "1.1", features = ["unstable"] }
 esp-alloc = "0.10"
 # **`println` is not optional**: this crate's build script fails outright
@@ -120,9 +113,15 @@ esp-bootloader-esp-idf = "0.5"
 
 [workspace]
 # `xtask` is the gate. A member rather than a separate workspace so one
-# `cargo test` reaches its tests, and so the size ratchet counts its source
-# like any other.
+# `cargo test` reaches its tests.
 members = ["xtask"]
+
+[workspace.lints.clippy]
+undocumented_unsafe_blocks = "deny"
+too_long_first_doc_paragraph = "deny"
+
+[workspace.lints.rustdoc]
+unescaped_backticks = "deny"
 
 # Size over speed: flash is the scarce resource, not cycles.
 #
@@ -134,11 +133,6 @@ lto = true
 codegen-units = 1
 panic = "abort"
 
-# **No `strip`.** The monorepo's root profile set `strip = true` and both of
-# these inherited it; the extraction dropped it, and it stays dropped on
-# purpose. `xpui-rp2040` weighed the same choice and landed on
-# `strip = "debuginfo"` because probe-rs finds the RTT control block by symbol
-# and `true` deletes the table it looks in. The argument carries here: neither
-# of these boards has been run, so the first person to run one wants symbol
-# names in a backtrace more than they want a smaller file on the host. It
+# No `strip`: neither board has been run yet, and the first person to run one
+# wants symbol names in a backtrace more than a smaller file on the host. It
 # costs nothing on the part — a symbol table is in no loadable segment.

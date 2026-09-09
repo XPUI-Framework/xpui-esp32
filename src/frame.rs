@@ -22,23 +22,19 @@ use crate::runtime::park;
 
 /// How often the loop wakes.
 ///
-/// The same interval `examples/rp2040` uses, and it exists for the same
-/// reason: **a loop with no wait in it spins the core at full clock for the
-/// life of the battery.** There is no input source on these boards yet, so
-/// without this the firmware would do nothing, forever, at full power.
+/// The same interval `xpui-rp2040` uses. **A loop with no wait in it spins
+/// the core at full clock for the life of the battery.**
+/// There is no input source on these boards yet, so without this the
+/// firmware would do nothing, forever, at full power.
 const FRAME_INTERVAL_MS: u32 = 10;
 
 /// Installs `panel` as the host, runs `root` on it, and reports what it drew.
-///
-/// The report is over the serial port and it matters more than it looks:
-/// without a panel driver, an ink count is the only evidence the frame reached
-/// pixels rather than stopping somewhere in layout.
 pub fn run<const BYTES: usize, S>(panel: Panel<BYTES>, board: Board, root: S) -> !
 where
     S: Screen + 'static,
 {
-    // Sized from the board, so a screen developed in the simulator window and
-    // the same screen here lay out against identical numbers.
+    // `panel` was sized from the board by the binary, and nothing here checks
+    // that the two agree.
     let backend = wire(panel, board, Palette::INK_IS_ON).leaked();
     // Safety: one panel, one thread, and nothing has rendered yet.
     unsafe { xpui::host::install(backend) };

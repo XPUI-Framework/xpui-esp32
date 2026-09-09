@@ -1,24 +1,11 @@
 //! A one-bit framebuffer, and the seam where a real panel driver goes.
 //!
-//! # There is no driver here, and that is deliberate
-//!
-//! `examples/rp2040` names `uc8151` and `mipidsi` because those are published
-//! crates for the panels those boards carry. **For the X3 and the Sticky there
-//! is no such crate.** The nearest working code is `pulp-os`'s hand-written
-//! SSD1677 driver — 682 lines, strip-streamed, tested on one specific panel —
-//! and vendoring that into a framework repository that cannot power a panel to
-//! test it would be six hundred lines nobody here can verify.
-//!
-//! So this owns the framebuffer and stops there. Everything above it is real:
-//! the board's geometry, the chrome, the frame loop, the allocator, the panic
-//! handler, and a complete gallery laid out for the right panel. What is
-//! missing is the last step — moving these bytes onto glass — and it is one
-//! function, [`Panel::present`], with the controller's name in a comment
-//! rather than an implementation.
-//!
-//! That is the honest shape for what can be proven from here. `cargo build`
-//! proving a firmware links is not the same as a lit panel, and
-//! `docs/orientation.md` puts the second on the user's side of the line.
+//! **There is no driver here, and that is deliberate.** `xpui-rp2040` names
+//! `uc8151` and `mipidsi` because those are published crates for its panels;
+//! for the X3 and the Sticky there is none, and the README says why one is
+//! not written here. So this owns the framebuffer and stops there: what is
+//! missing is one function, [`Panel::present`]. `cargo build` proving a
+//! firmware links is not the same as a lit panel.
 
 use embedded_graphics::pixelcolor::BinaryColor;
 use embedded_graphics::prelude::*;
@@ -26,9 +13,8 @@ use embedded_graphics::primitives::Rectangle;
 
 /// The panel's memory, one bit per pixel.
 ///
-/// `const` generic over the byte count rather than allocated, so the buffer is
-/// in `.bss` and its size is a compile error rather than a heap failure at
-/// boot on a chip with no room to spare.
+/// `const` generic over the byte count, so a binary computes the size from
+/// its board and [`Panel::new`] asserts the two agree at boot.
 pub struct Panel<const BYTES: usize> {
     pixels: [u8; BYTES],
     width: i32,
@@ -64,13 +50,8 @@ impl<const BYTES: usize> Panel<BYTES> {
         &self.pixels
     }
 
-    /// How much ink is on the panel. The frame loop reports it over the serial
-    /// port on every repaint, so a board with no driver still says whether it
-    /// drew.
-    ///
-    /// Counted a byte at a time rather than a pixel at a time — eight times
-    /// less work for the same answer, on a path that now runs every frame
-    /// rather than once at boot.
+    /// How much ink is on the panel, reported over the serial port on every
+    /// repaint. Counted a byte at a time, because this runs per frame.
     pub fn ink_count(&self) -> usize {
         let stride = self.stride();
         let used_bits = self.width as usize % 8;
@@ -96,14 +77,11 @@ impl<const BYTES: usize> Panel<BYTES> {
 
     /// **Where the panel driver goes.**
     ///
-    /// The X3 and the Sticky both drive their glass over SPI — the Sticky's is
-    /// an SSD1677-class controller — through a sequence of command and data
-    /// writes, a waveform table, and a wait on a BUSY line. None of that is in
-    /// this repository, and none of it can be tested from it.
-    ///
-    /// A firmware fills this in, or replaces `Panel` with a driver crate that
-    /// is already a `DrawTarget`, which is the better answer when one exists:
-    /// then `Backend` holds the driver and this file goes away.
+    /// Both boards drive their glass over SPI — the Sticky's is an
+    /// SSD1677-class controller — through command and data writes, a waveform
+    /// table, and a wait on a BUSY line; none of that is here. A firmware
+    /// fills this in, or replaces `Panel` with a driver crate that is already
+    /// a `DrawTarget`: then `Backend` holds the driver and this file goes away.
     pub fn present(&mut self) {
         // Nothing. Every byte is in `bytes()`, waiting for a driver.
     }
