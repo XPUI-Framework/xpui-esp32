@@ -1,9 +1,10 @@
+[![CI](https://github.com/XPUI-Framework/xpui-esp32/actions/workflows/ci.yml/badge.svg)](https://github.com/XPUI-Framework/xpui-esp32/actions/workflows/ci.yml) [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 # `xpui-esp32`
 
-> ⚠️ **Under heavy development.** Not production-ready. The API can break
-> without notice. Use at your own risk.
-
-[![CI](https://github.com/XPUI-Framework/xpui-esp32/actions/workflows/ci.yml/badge.svg)](https://github.com/XPUI-Framework/xpui-esp32/actions/workflows/ci.yml) [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+> [!WARNING]
+> Under heavy development. Not production-ready. The API can break without
+> notice. Use at your own risk.
 
 The gallery as ESP32 firmware: two boards on two architectures, running the
 same screens the desktop simulator opens and the RP2040 binaries flash. Both
