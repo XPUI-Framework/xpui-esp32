@@ -1,0 +1,35 @@
+# The tutorial, compiled.
+#
+# Its own workspace, so the crate that compiles the prose is not the crate the
+# prose is about: nothing in the firmware builds for a laptop, and rustdoc
+# runs snippets on the host. `src/lib.rs` says the rest.
+[package]
+name = "xpui-esp32-docs"
+description = "Compiles this repository's tutorial. Not published, not flashed."
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Thiago Holanda <unnamedd@gmail.com>"]
+repository = "https://github.com/XPUI-Framework/xpui-esp32"
+publish = false
+
+[lints]
+workspace = true
+
+[workspace]
+
+[workspace.lints.clippy]
+undocumented_unsafe_blocks = "deny"
+too_long_first_doc_paragraph = "deny"
+
+[workspace.lints.rustdoc]
+unescaped_backticks = "deny"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+xpui = { git = "https://github.com/XPUI-Framework/xpui-framework", branch = "main" }
+xpui-boards-xteink = { git = "https://github.com/XPUI-Framework/xpui-boards", branch = "main" }
+xpui-embedded-graphics = { git = "https://github.com/XPUI-Framework/xpui-backends", branch = "main" }
+xpui-screenshot = { git = "https://github.com/XPUI-Framework/xpui-backends", branch = "main", features = ["golden"] }

@@ -11,6 +11,10 @@
 //! ./build-and-test.sh all      the above, plus linking both firmware images
 //! ```
 //!
+//! The tutorial's doctests live in `docs-test/`, a workspace of its own,
+//! because nothing in the firmware builds for a laptop; `images.rs` holds
+//! the two link stages `all` adds.
+//!
 //! Each repository in the organisation has its own copy of this shape, holding
 //! its own list. **This file is the part that is meant to differ**; the modules
 //! under it are byte-identical, and `shared_files_agree` in `xpui-dev` hashes
@@ -27,6 +31,8 @@ mod comments;
 mod docs;
 mod faults;
 mod fences;
+mod images;
+mod nested;
 mod paths;
 mod prose;
 mod readme;
@@ -43,10 +49,16 @@ const LINE_LIMIT: usize = 400;
 /// re-read rather than accumulated — and an exemption for a crate that has
 /// since grown tests fails, rather than sitting there as a comment nobody
 /// removes.
-const UNTESTED: [(&str, &str); 1] = [(
-    ".",
-    "the firmware; test = false, and esp-hal cannot compile for a laptop",
-)];
+const UNTESTED: [(&str, &str); 2] = [
+    (
+        ".",
+        "the firmware; test = false, and esp-hal cannot compile for a laptop",
+    ),
+    (
+        "docs-test",
+        "a doctest mount; its only content is this repository's tutorial",
+    ),
+];
 
 /// Fence languages this repository's prose is written in.
 ///
@@ -64,9 +76,16 @@ const NOT_COMPILED: [&str; 0] = [];
 /// Pages that are not a repository's front door and carry no banner.
 const NOT_A_FRONT_PAGE: [&str; 0] = [];
 
-/// The root README's headings, in order. Empty until this repository's front
-/// page is brought to the standard; then the eight.
-const README_ORDER: &[&str] = &[];
+/// The root README's headings, in order.
+const README_ORDER: &[&str] = &[
+    "Which crate you want",
+    "Using it",
+    "Requirements",
+    "Checking it",
+    "Where next",
+    "Where it sits",
+    "License",
+];
 const README_OPTIONAL: &[&str] = &["Which crate you want", "Requirements"];
 const NESTED_ORDER: &[&str] = &[
     "Using it",
@@ -78,7 +97,7 @@ const NESTED_ORDER: &[&str] = &[
 const NESTED_OPTIONAL: &[&str] = &["Requirements", "Where next"];
 
 /// `AGENTS.md` exists and `CLAUDE.md` is a symlink to it.
-const AGENTS_FILE: bool = false;
+const AGENTS_FILE: bool = true;
 
 /// Every publishable crate denies `missing_docs`. `true` here says so for
 /// none: nothing in this repository is published.
@@ -100,11 +119,6 @@ const COMMENT_SCOPE: Option<&str> = None;
 /// of the toolchain, which no laptop has by default and which CI installs
 /// separately, so it is not a gate here.
 const BARE_METAL: [(&str, bool); 1] = [("riscv32imc-unknown-none-elf", true)];
-
-/// The `esp` fork's toolchain name and the Xtensa board's triple. Named here
-/// because `all` is the only mode that uses them, and only if they exist.
-const ESP_TOOLCHAIN: &str = "esp";
-const ESP_TARGET: &str = "xtensa-esp32s3-none-elf";
 
 /// One board's binary and its feature, because the two boards are two
 /// architectures and there is no single default to pick.
@@ -135,11 +149,16 @@ fn main() -> ExitCode {
         (
             "format",
             Box::new(move || {
-                if fix {
-                    cargo::cargo(&["fmt", "--all"])
-                } else {
-                    cargo::cargo(&["fmt", "--all", "--check"])
+                // Two workspaces: `docs-test/` is its own, so `--all` from
+                // the root never reaches it.
+                for manifest in ["Cargo.toml", "docs-test/Cargo.toml"] {
+                    let mut arguments = vec!["fmt", "--manifest-path", manifest, "--all"];
+                    if !fix {
+                        arguments.push("--check");
+                    }
+                    cargo::cargo(&arguments)?;
                 }
+                Ok("the firmware and docs-test".into())
             }),
         ),
         ("file sizes", Box::new(|| tree::file_sizes(LINE_LIMIT))),
@@ -156,10 +175,7 @@ fn main() -> ExitCode {
             Box::new(|| prose::is_compiled(&NOT_COMPILED, &KNOWN_LANGUAGES)),
         ),
         ("documented paths resolve", Box::new(docs::doc_paths)),
-        (
-            "rustdoc links resolve",
-            Box::new(|| cargo::rustdoc(&["--workspace"])),
-        ),
+        ("rustdoc links resolve", Box::new(nested::rustdoc_links)),
         (
             "documented commands resolve",
             Box::new(|| commands::resolve(&cargo::packages(), &[])),
@@ -169,6 +185,11 @@ fn main() -> ExitCode {
         (
             "doctests",
             Box::new(|| cargo::cargo(&["test", "--workspace", "--doc"])),
+        ),
+        ("the prose compiles", Box::new(docs_test)),
+        (
+            "the nested clippy config agrees",
+            Box::new(nested::nested_clippy_agrees),
         ),
         (
             "README sections",
@@ -206,8 +227,8 @@ fn main() -> ExitCode {
     // demand.
     if everything {
         gate.extend::<Vec<(&str, Box<dyn Fn() -> Result<String, String>>)>>(vec![
-            ("the ESP32-C3 image links", Box::new(c3_links)),
-            ("the ESP32-S3 image links", Box::new(s3_links)),
+            ("the ESP32-C3 image links", Box::new(images::c3_links)),
+            ("the ESP32-S3 image links", Box::new(images::s3_links)),
         ]);
     }
 
@@ -260,6 +281,7 @@ fn lint() -> Result<String, String> {
     ])?;
     let mut notes = vec!["host".to_string()];
     bare_metal(&mut notes)?;
+    notes.push(nested::docs_test_lints()?);
     Ok(notes.join(", "))
 }
 
@@ -297,96 +319,11 @@ fn bare_metal(notes: &mut Vec<String>) -> Result<(), String> {
     }
 }
 
-/// The RISC-V image links.
-fn c3_links() -> Result<String, String> {
-    cargo::cargo(&[
-        "build",
-        "--release",
-        "--bin",
-        "x3",
-        "--features",
-        "x3",
-        "--target",
-        "riscv32imc-unknown-none-elf",
-    ])?;
-    Ok("x3".into())
-}
-
-/// The Xtensa image links, if this machine can build Xtensa at all.
+/// The tutorial's doctests, from the host workspace beside the firmware.
 ///
-/// The `esp` fork is a whole second toolchain and its linker is a GCC that
-/// ships beside it, so both are looked for and a missing one skips rather than
-/// fails: nobody can fix it from inside this repository.
-fn s3_links() -> Result<String, String> {
-    let out = std::process::Command::new("rustup")
-        .args(["toolchain", "list"])
-        .output()
-        .map_err(|e| format!("rustup: {e}"))?;
-    if !String::from_utf8_lossy(&out.stdout)
-        .lines()
-        .any(|l| l.starts_with(ESP_TOOLCHAIN))
-    {
-        return Ok(format!(
-            "skipped: the '{ESP_TOOLCHAIN}' toolchain is not installed.\n\
-             cargo install espup && espup install"
-        ));
-    }
-    let home = std::env::var("RUSTUP_HOME")
-        .unwrap_or_else(|_| format!("{}/.rustup", std::env::var("HOME").unwrap_or_default()));
-    let Some(linker) = find(
-        std::path::Path::new(&home)
-            .join("toolchains")
-            .join(ESP_TOOLCHAIN),
-        "xtensa-esp32s3-elf-gcc",
-    ) else {
-        return Ok(format!(
-            "skipped: the '{ESP_TOOLCHAIN}' toolchain is installed but its linker is not.\n\
-             Re-run 'espup install', or source ~/export-esp.sh."
-        ));
-    };
-    let path = format!(
-        "{}:{}",
-        linker.parent().expect("a directory").display(),
-        std::env::var("PATH").unwrap_or_default()
-    );
-    // Through `rustup run`, not `cargo +esp`: `env!("CARGO")` is the cargo
-    // binary itself, and a `+toolchain` directive is rustup's shim's to read.
-    let status = std::process::Command::new("rustup")
-        .env("PATH", path)
-        .args([
-            "run",
-            ESP_TOOLCHAIN,
-            "cargo",
-            "build",
-            "--release",
-            "--bin",
-            "sticky",
-            "--features",
-            "sticky",
-            "--target",
-            ESP_TARGET,
-        ])
-        .status()
-        .map_err(|e| format!("cargo: {e}"))?;
-    if status.success() {
-        Ok("sticky".into())
-    } else {
-        Err("the ESP32-S3 image does not link".into())
-    }
-}
-
-/// The first file named `name` anywhere under `root`.
-fn find(root: std::path::PathBuf, name: &str) -> Option<std::path::PathBuf> {
-    let mut stack = vec![root];
-    while let Some(dir) = stack.pop() {
-        for entry in std::fs::read_dir(&dir).into_iter().flatten().flatten() {
-            let path = entry.path();
-            if path.is_dir() {
-                stack.push(path);
-            } else if entry.file_name() == name {
-                return Some(path);
-            }
-        }
-    }
-    None
+/// No `--target`, unlike `xpui-rp2040`'s twin: `.cargo/config.toml` here
+/// sets no default target, so the host is what cargo builds for.
+fn docs_test() -> Result<String, String> {
+    cargo::cargo(&["test", "--manifest-path", "docs-test/Cargo.toml", "--doc"])?;
+    Ok("docs-test/Cargo.toml on the host".into())
 }

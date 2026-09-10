@@ -29,6 +29,7 @@
 //! Name one board.
 
 #![cfg_attr(device, no_std)]
+#![deny(missing_docs)]
 
 #[cfg(device)]
 extern crate alloc;
