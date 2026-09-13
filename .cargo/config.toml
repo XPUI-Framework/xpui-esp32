@@ -2,7 +2,7 @@
 # so it changes nothing for the workspace root — which is what keeps the gates
 # there building this crate for the host, as they build every other member.
 #
-# No `[build] target` here, unlike `examples/rp2040`: the two boards are two
+# No `[build] target` here, unlike `xpui-rp2040`: the two boards are two
 # different architectures, so there is no single default to pick. Name the
 # target and the board's feature together:
 #

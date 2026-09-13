@@ -5,8 +5,9 @@
 
 use crate::cargo;
 
-/// The `esp` fork's toolchain name and the Xtensa board's triple.
+/// The `esp` fork's toolchain name.
 const ESP_TOOLCHAIN: &str = "esp";
+/// The Xtensa board's triple.
 const ESP_TARGET: &str = "xtensa-esp32s3-none-elf";
 
 /// The RISC-V image links.

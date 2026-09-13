@@ -6,8 +6,8 @@
 /// How much of the chip's SRAM `xpui` gets.
 ///
 /// It holds the leaked backend — and with it the panel's framebuffer: 52,272
-/// bytes on the X3, 48,000 on the Sticky, four fifths of this — the stack of
-/// live screens, and the view tree `body()` rebuilds on every frame that
+/// bytes on the X3, four fifths of this, and 48,000 on the Sticky — the stack
+/// of live screens, and the view tree `body()` rebuilds on every frame that
 /// carries input. Raise it before adding a screen that buffers anything.
 const HEAP_SIZE: usize = 64 * 1024;
 

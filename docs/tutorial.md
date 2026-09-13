@@ -156,9 +156,9 @@ framework knows which way your driver wired it.
 
 `Panel` here initialises to zero and treats a set bit as ink, so the firmware
 uses `INK_IS_ON`, which is why step 1 did. **When you write the driver, this is
-the first thing to check against the glass**: an SSD1677-class controller has
-its own idea of which bit is black, and if the first frame comes up inverted
-the palette is the one-word fix, not the driver.
+the first thing to check against the glass**: the panel's controller has its
+own idea of which bit is black, and if the first frame comes up inverted the
+palette is the one-word fix, not the driver.
 
 ## 3. The frame loop, and where the driver goes
 

@@ -11,7 +11,8 @@ use crate::cargo;
 ///
 /// The board run is the one this repository could not do any other way: a
 /// doc comment behind `cfg(device)` is not parsed by a host rustdoc, and
-/// `src/` is nothing but such code.
+/// `src/` is nothing but such code. It reaches the library and the `x3`
+/// binary; `sticky` needs the Xtensa fork, so no run here reads it.
 pub fn rustdoc_links() -> Result<String, String> {
     let mut notes = Vec::new();
     cargo::rustdoc(&["--workspace"])?;
@@ -19,7 +20,7 @@ pub fn rustdoc_links() -> Result<String, String> {
 
     let board = "riscv32imc-unknown-none-elf";
     if cargo::target_installed(board) {
-        cargo::rustdoc(&["--release", "--lib", "--features", "x3", "--target", board])?;
+        cargo::rustdoc(&["--release", "--features", "x3", "--target", board])?;
         notes.push(board.to_string());
     } else {
         notes.push(format!("{board} SKIPPED — rustup target add {board}"));

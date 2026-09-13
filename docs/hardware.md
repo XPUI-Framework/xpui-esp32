@@ -58,9 +58,10 @@ holds the driver and `panel.rs` goes away.
 | SRAM | 400 KB on the ESP32-C3, 512 KB on the ESP32-S3 |
 
 On the X3 the framebuffer is four fifths of the heap, leaving about 13 kB for
-the screen stack and the view tree `body()` rebuilds every frame; on the
-Sticky it is under three quarters, leaving about 17 kB. Raise
-`HEAP_SIZE` before adding a screen that buffers anything; the chip has room.
+the screen stack and the view tree `body()` rebuilds on every paint and every
+frame carrying input; on the Sticky it is under three quarters, leaving about
+17 kB. Raise `HEAP_SIZE` before adding a screen that buffers anything; the chip
+has room.
 
 ## The two chips
 

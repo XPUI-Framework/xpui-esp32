@@ -165,12 +165,12 @@ dependencies = [
 [[package]]
 name = "xpui"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-framework?branch=main#5ad81967f327d2d4df561df8beb39adb8ce8a4b7"
+source = "git+https://github.com/XPUI-Framework/xpui-framework?branch=main#8d5ae9c0e98e7bfe390f30567403c3c71bd9b9f5"
 
 [[package]]
 name = "xpui-boards-core"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-boards?branch=main#6b9f1d5fae222ca818b3352da94fe0fd1b2829d6"
+source = "git+https://github.com/XPUI-Framework/xpui-boards?branch=main#9df4ee2a878b2e13660ea26b1993b7cddeff7067"
 dependencies = [
  "xpui",
 ]
@@ -178,7 +178,7 @@ dependencies = [
 [[package]]
 name = "xpui-boards-xteink"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-boards?branch=main#6b9f1d5fae222ca818b3352da94fe0fd1b2829d6"
+source = "git+https://github.com/XPUI-Framework/xpui-boards?branch=main#9df4ee2a878b2e13660ea26b1993b7cddeff7067"
 dependencies = [
  "xpui",
  "xpui-boards-core",
@@ -187,7 +187,7 @@ dependencies = [
 [[package]]
 name = "xpui-chrome"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-chrome?branch=main#1d7415233d556872fb2942635a25830d4436c4f5"
+source = "git+https://github.com/XPUI-Framework/xpui-chrome?branch=main#09bef54f7d57ae937e20e7ad07a6dc9cb0b0ce93"
 dependencies = [
  "xpui",
 ]
@@ -195,7 +195,7 @@ dependencies = [
 [[package]]
 name = "xpui-embedded-graphics"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-backends?branch=main#ee5d93ac55e8dfd702e59eef3dd29fb016d9219f"
+source = "git+https://github.com/XPUI-Framework/xpui-backends?branch=main#8527aff7327191c668c1e84a0d665a0f3e27945d"
 dependencies = [
  "embedded-graphics",
  "u8g2-fonts",
@@ -216,7 +216,7 @@ dependencies = [
 [[package]]
 name = "xpui-screenshot"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-backends?branch=main#ee5d93ac55e8dfd702e59eef3dd29fb016d9219f"
+source = "git+https://github.com/XPUI-Framework/xpui-backends?branch=main#8527aff7327191c668c1e84a0d665a0f3e27945d"
 dependencies = [
  "embedded-graphics",
  "png",

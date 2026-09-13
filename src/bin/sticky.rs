@@ -6,8 +6,9 @@
 //! list row is 5.2 mm.
 //!
 //! ```bash
+//! . ~/export-esp.sh   # the Sticky's linker, on PATH for this shell
 //! cargo +esp build --release --bin sticky --features sticky \
-//!   --target xtensa-esp32s3-none-elf -Z build-std=core,alloc
+//!   --target xtensa-esp32s3-none-elf
 //! ```
 //!
 //! **Stable Rust cannot target Xtensa at all.** It needs the `esp` toolchain

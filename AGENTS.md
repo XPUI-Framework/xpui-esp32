@@ -43,17 +43,19 @@ note where the `esp` fork is not installed.
   the firmware crate cannot run a doctest on a laptop.
 - **`rustdoc links resolve` runs for the board as well as the host.** Every
   item under `src/` sits behind the `device` cfg, so a host rustdoc parses an
-  empty crate and reads none of its doc comments; the `riscv32imc` run is the
-  only one that reads them.
+  empty crate and reads none of its doc comments. The `riscv32imc` run is the
+  only one that reads them, and it documents the library and the `x3`
+  binary; `src/bin/sticky.rs` needs the Xtensa fork, so no rustdoc run reads
+  its doc comments.
 - **`the nested clippy config agrees`** — `docs-test/` is a workspace of its
   own, so `--workspace` reaches neither its lints nor its `clippy.toml`.
   `lint` names it explicitly and this stage keeps its config equal to the
   root's; `xpui-dev` compares only the root file and cannot see it.
 - **`the ESP32-C3 image links`** and **`the ESP32-S3 image links`**, under
   `all` only: the linker script, `build.rs`'s `linkall.x`, and both binaries.
-- **`lint` runs for one board**: `cargo clippy --bin x3 --features x3` on
-  `riscv32imc`, then the host workspace and `docs-test/`. The Xtensa half is
-  never linted here; it needs the fork.
+- **`lint` runs for one board**: the host workspace, then
+  `cargo clippy --release --bin x3 --features x3` on `riscv32imc`, then
+  `docs-test/`. The Xtensa half is never linted here; it needs the fork.
 - `published crates deny missing_docs` prints `no publishable crates`, this
   repository's permanent truth, so it checks nothing.
   `#![deny(missing_docs)]` in `src/lib.rs` is what actually holds the rule,
@@ -86,11 +88,12 @@ note where the `esp` fork is not installed.
 | Document | Proven by |
 |---|---|
 | [`README.md`](README.md), [`docs-test/README.md`](docs-test/README.md) | their paths and commands resolve; neither carries a `rust` fence |
+| [`docs/README.md`](docs/README.md) | its paths resolve; the README-heading check exempts it, because it is the index of `docs/`, not a front page |
 | [`docs/tutorial.md`](docs/tutorial.md) | every `rust` fence is a doctest in `docs-test/`, mounted by `docs-test/src/lib.rs` |
-| [`docs/hardware.md`](docs/hardware.md) | its paths resolve, and nothing else: **no stage recomputes a number in it.** Every figure here is checked by hand against `src/` and `Cargo.toml` |
+| [`docs/hardware.md`](docs/hardware.md) | its paths resolve, and nothing else: **no stage recomputes a number in it.** Every figure here is checked by hand: the framebuffer sizes against `xteink::X3` and `seeed::STICKY` in `xpui-boards`, the heap against `src/runtime.rs`, the PAC versions against `Cargo.toml`, and the SRAM against Espressif's datasheets |
 | [`docs/contributing.md`](docs/contributing.md) | every path and command it gives resolves; the umbrella command is `xpui-dev`'s |
 | `AGENTS.md` | the stage list above is compared to what the gate runs, in both modes |
-| every `///` and `//!` | `rustdoc links resolve`, on the board as well as the host, and the two comment checks |
+| every `///` and `//!` | the two comment checks; and `rustdoc links resolve` — the host workspace, `docs-test/`, and on the board the library and `src/bin/x3.rs`, never `src/bin/sticky.rs` |
 
 ## Git
 

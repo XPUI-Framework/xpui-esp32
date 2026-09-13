@@ -2,8 +2,8 @@
 //!
 //! **There is no driver here, and that is deliberate.** `xpui-rp2040` names
 //! `uc8151` and `mipidsi` because those are published crates for its panels;
-//! for the X3 and the Sticky there is none, and the README says why one is
-//! not written here. So this owns the framebuffer and stops there: what is
+//! for the X3 and the Sticky there is none, and `docs/hardware.md` says why
+//! one is not written here. So this owns the framebuffer and stops there: what is
 //! missing is one function, [`Panel::present`]. `cargo build` proving a
 //! firmware links is not the same as a lit panel.
 

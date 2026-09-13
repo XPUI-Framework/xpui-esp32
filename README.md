@@ -1,6 +1,11 @@
 [![CI](https://github.com/XPUI-Framework/xpui-esp32/actions/workflows/ci.yml/badge.svg)](https://github.com/XPUI-Framework/xpui-esp32/actions/workflows/ci.yml) [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-# `xpui-esp32`
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo-black.png">
+  <img src="assets/logo-white.png" alt="XPUI" width="64" height="64">
+</picture>
+
+# MCU: ESP32
 
 > [!WARNING]
 > Under heavy development. Not production-ready. The API can break without
@@ -12,10 +17,12 @@ images build and link; neither board has been run, and there is no panel
 driver — `Panel::present` is where one goes, and
 [docs/hardware.md](docs/hardware.md) says why it is marked rather than faked.
 
-| Binary | Board | Chip | Target |
-|---|---|---|---|
-| `x3` | Xteink X3 | ESP32-C3 | `riscv32imc-unknown-none-elf` |
-| `sticky` | Seeed Sticky | ESP32-S3 | `xtensa-esp32s3-none-elf` |
+| Binary   | Board        | Chip     | Target                        |
+| -------- | ------------ | -------- | ----------------------------- |
+| `x3`     | Xteink X3    | ESP32-C3 | `riscv32imc-unknown-none-elf` |
+| `sticky` | Seeed Sticky | ESP32-S3 | `xtensa-esp32s3-none-elf`     |
+
+Every document in this repository is listed in [docs/README.md](docs/README.md).
 
 ## Using it
 
@@ -77,14 +84,6 @@ in place first. The Xtensa image links only where the fork is installed, and
 the gate says so when it is not. How a change is reviewed is in
 [docs/contributing.md](docs/contributing.md).
 
-## Where next
-
-| | |
-|---|---|
-| [docs/tutorial.md](docs/tutorial.md) | your first screen on an ESP32: the board as data, the palette trap, the loop and the driver seam, memory, flashing — compiled by `docs-test/` |
-| [docs/hardware.md](docs/hardware.md) | what runs and what does not, where the panel driver goes, memory, the two chips, and what the build taught |
-| [docs/contributing.md](docs/contributing.md) | the target, the fork, `espflash`, the gate in both modes, the five review steps, and how a commit is written |
-
 ## Where it sits
 
 Every arrow is a dependency in a `Cargo.toml`, and they all point inward
@@ -94,7 +93,7 @@ knowing it exists, and a firmware reaches whatever it needs directly rather
 than through whoever happens to sit above it.
 
 ```mermaid
-flowchart BT
+flowchart TD
   xpui["xpui<br/>the framework"]
   chrome["xpui-chrome<br/>components"]
   boards["xpui-boards<br/>seven devices"]
