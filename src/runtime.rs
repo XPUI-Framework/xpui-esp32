@@ -1,7 +1,8 @@
-//! A heap, somewhere for a panic to go, and a way to stop.
+//! A heap, and a way to stop.
 //!
-//! Nothing a hosted program would think about, and all of it required before
-//! the first line of UI code runs.
+//! Nothing a hosted program would think about, and the heap is required before
+//! the first line of UI code runs. The panic handler is not here: it is
+//! `esp-backtrace`'s, which each binary links with `use esp_backtrace as _;`.
 
 /// How much of the chip's SRAM `xpui` gets.
 ///

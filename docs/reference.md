@@ -2,7 +2,7 @@
 
 Every public item in `xpui-esp32`: the frame loop, the one-bit framebuffer it
 paints into, and the two calls a bare-metal board needs around them.
-[The tutorial](tutorial.md) puts a first screen on an X3 with them;
+[The tutorial](tutorial.md) puts a first screen on an [X3](https://www.xteink.com/products/xteink-x3) with them;
 [hardware.md](hardware.md) is what is known about the panels and the memory.
 
 Every item sits behind the `device` cfg, which `build.rs` sets for the board
@@ -81,7 +81,7 @@ fn start() -> ! {
 }
 ```
 
-Fenced `text`: an `esp-hal` entry point, which compiles for the ESP32-C3 and
+Fenced `text`: an [`esp-hal`](https://crates.io/crates/esp-hal) entry point, which compiles for the [ESP32-C3](https://www.espressif.com/en/products/socs/esp32-c3) and
 nowhere else. [`src/bin/x3.rs`](../src/bin/x3.rs) is all of it.
 
 **See also:** [`Panel`](#panel), [`init_heap`](#init_heap)
@@ -105,8 +105,8 @@ at compile time, and [`Panel::new`](#panelnew) checks the two agree at boot.
 
 | Board | Canvas | `BYTES` |
 |---|---|---|
-| Xteink X3 | 528 × 792 | 52,272 |
-| Seeed Sticky | 800 × 480 | 48,000 |
+| [Xteink](https://www.xteink.com/) X3 | 528 × 792 | 52,272 |
+| [Seeed Sticky](https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html) | 800 × 480 | 48,000 |
 
 > [!WARNING]
 > **There is no panel driver.** [`Panel::present`](#panelpresent) does nothing,
@@ -170,7 +170,7 @@ pub fn present(&mut self)
 [`run`](#run) calls it after every paint, before counting the ink, and it does
 nothing. Both boards drive their glass over SPI: command and data writes, a
 waveform table, and a wait on a BUSY line. The Sticky's controller is
-SSD1677-class; the X3's is not established.
+[SSD1677](https://www.solomon-systech.com/product/ssd1677)-class; the X3's is not established.
 
 A firmware fills this in, or replaces `Panel` with a driver crate that is
 already a `DrawTarget`. Then the backend holds the driver, and `Panel` goes
@@ -198,7 +198,7 @@ Hands the allocator its memory.
 pub fn init_heap()
 ```
 
-64 kB of the chip's SRAM, through `esp-alloc`. The framebuffer is inside it,
+64 kB of the chip's SRAM, through [`esp-alloc`](https://crates.io/crates/esp-alloc). The framebuffer is inside it,
 because [`Panel`](#panel) is leaked with the backend: 52,272 bytes on the X3,
 leaving about 13 kB for the screen stack and the view tree `body()` rebuilds.
 Raise `HEAP_SIZE` in [`src/runtime.rs`](../src/runtime.rs) before a screen
@@ -207,7 +207,7 @@ buffers anything; [the memory table](hardware.md#memory) has both boards.
 Call it once, as the first line of the entry point: `App::new` allocates on
 its first line.
 
-The panic handler is not this crate's. It comes from `esp-backtrace`, which
+The panic handler is not this crate's. It comes from [`esp-backtrace`](https://crates.io/crates/esp-backtrace), which
 each binary links with `use esp_backtrace as _;`.
 
 ## `runtime::park`

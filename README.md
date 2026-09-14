@@ -12,22 +12,22 @@
 > notice. Use at your own risk.
 
 The gallery as ESP32 firmware: two boards on two architectures, running the
-same screens the desktop simulator opens and the RP2040 binaries flash. Both
+same screens the desktop simulator opens and the [RP2040](https://www.raspberrypi.com/products/rp2040/) binaries flash. Both
 images build and link; neither board has been run, and there is no panel
 driver — `Panel::present` is where one goes, and
 [docs/hardware.md](docs/hardware.md) says why it is marked rather than faked.
 
 | Binary   | Board        | Chip     | Target                        |
 | -------- | ------------ | -------- | ----------------------------- |
-| `x3`     | Xteink X3    | ESP32-C3 | `riscv32imc-unknown-none-elf` |
-| `sticky` | Seeed Sticky | ESP32-S3 | `xtensa-esp32s3-none-elf`     |
+| `x3`     | [Xteink X3](https://www.xteink.com/products/xteink-x3) | [ESP32-C3](https://www.espressif.com/en/products/socs/esp32-c3) | `riscv32imc-unknown-none-elf` |
+| `sticky` | [Seeed Sticky](https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html) | [ESP32-S3](https://www.espressif.com/en/products/socs/esp32-s3) | `xtensa-esp32s3-none-elf`     |
 
 Every document in this repository is listed in [docs/README.md](docs/README.md).
 
 ## Using it
 
 For a firmware, using it is building it and flashing it. `--features` is not
-optional: the chip is a feature of `esp-hal` rather than a target, so two
+optional: the chip is a feature of [`esp-hal`](https://crates.io/crates/esp-hal) rather than a target, so two
 binaries in one crate cannot each choose their own, and `--all-features` is
 two chips at once.
 
@@ -38,7 +38,7 @@ cargo build --release --bin x3 --features x3 --target riscv32imc-unknown-none-el
 cargo +esp build --release --bin sticky --features sticky --target xtensa-esp32s3-none-elf
 ```
 
-`.cargo/config.toml` names `espflash` as the runner for both targets, so
+`.cargo/config.toml` names [`espflash`](https://crates.io/crates/espflash) as the runner for both targets, so
 `cargo run` flashes the board and opens the serial monitor, where the firmware
 reports its ink count on every repaint:
 
@@ -58,13 +58,13 @@ this repository: it is a leaf, an image for two boards.
 
 ## Requirements
 
-- **The X3 builds on stable Rust.** `rust-toolchain.toml` lists
-  `riscv32imc-unknown-none-elf`, so rustup installs it on the first cargo
+- **The X3 builds on stable [Rust](https://rust-lang.org/).** `rust-toolchain.toml` lists
+  `riscv32imc-unknown-none-elf`, so [rustup](https://rustup.rs/) installs it on the first cargo
   call.
-- **The Sticky needs Espressif's compiler fork.** Xtensa is not a target
+- **The Sticky needs [Espressif's compiler fork](https://github.com/esp-rs/rust).** Xtensa is not a target
   stable Rust has: `cargo install espup && espup install` puts the `esp`
   toolchain and its linker in place, and `cargo +esp` selects it. `core` is
-  built from source on that path. **`espup` does not touch your shell**, so
+  built from source on that path. **[`espup`](https://crates.io/crates/espup) does not touch your shell**, so
   `. ~/export-esp.sh` in each new one, or the build stops at
   ``linker `xtensa-esp32s3-elf-gcc` not found``. The gate finds that linker
   itself; a `cargo` line does not.

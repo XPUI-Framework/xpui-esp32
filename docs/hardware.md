@@ -26,10 +26,10 @@ exact size and hands off at one function, [`Panel::present`](reference.md#panelp
 **That is where a panel driver goes.** Every byte of the frame is in
 [`Panel::bytes`](reference.md#panelbytes).
 
-No published Rust or C++ driver exists for these panels. The RP2040 boards
-could name `uc8151` and `mipidsi` because those are published crates; the X3
-and the Sticky have no equivalent. The nearest working code is a hand-written
-SSD1677 driver in an unrelated project — some seven hundred lines,
+No published [Rust](https://rust-lang.org/) or C++ driver exists for these panels. The [RP2040](https://www.raspberrypi.com/products/rp2040/) boards
+could name [`uc8151`](https://crates.io/crates/uc8151) and [`mipidsi`](https://crates.io/crates/mipidsi) because those are published crates; the [X3](https://www.xteink.com/products/xteink-x3)
+and the [Sticky](https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html) have no equivalent. The nearest working code is a hand-written
+[SSD1677](https://www.solomon-systech.com/product/ssd1677) driver in an unrelated project — some seven hundred lines,
 strip-streamed, tested against one specific 800×480 panel, which is exactly
 the Sticky's framebuffer geometry. The X3's is 792×528. Vendoring it into a repository
 that cannot power a panel to test it would add something nobody here could
@@ -53,10 +53,10 @@ holds the driver and `panel.rs` goes away.
 
 | | |
 |---|---|
-| Heap | 64 kB, in [`src/runtime.rs`](../src/runtime.rs), from `esp-alloc`, handed over by [`init_heap`](reference.md#init_heap) |
+| Heap | 64 kB, in [`src/runtime.rs`](../src/runtime.rs), from [`esp-alloc`](https://crates.io/crates/esp-alloc), handed over by [`init_heap`](reference.md#init_heap) |
 | The X3's framebuffer | 52,272 bytes, **inside the heap**: `Panel` is leaked with the backend |
 | The Sticky's | 48,000 bytes, likewise |
-| SRAM | 400 KB on the ESP32-C3, 512 KB on the ESP32-S3 |
+| SRAM | 400 KB on the [ESP32-C3](https://www.espressif.com/en/products/socs/esp32-c3), 512 KB on the [ESP32-S3](https://www.espressif.com/en/products/socs/esp32-s3) |
 
 On the X3 the framebuffer is four fifths of the heap, leaving about 13 kB for
 the screen stack and the view tree `body()` rebuilds on every paint and every
@@ -69,13 +69,13 @@ has room.
 | | ESP32-C3 (`x3`) | ESP32-S3 (`sticky`) |
 |---|---|---|
 | Architecture | RISC-V, `riscv32imc-unknown-none-elf` | Xtensa, `xtensa-esp32s3-none-elf` |
-| Toolchain | stable Rust, the pinned channel | the `esp` fork, from `espup`; `core` built from source |
-| `-C force-frame-pointers` | on | **off** — with it the fork's LLVM fails to build `compiler_builtins`; `.cargo/config.toml` says why |
+| Toolchain | stable Rust, the pinned channel | the `esp` fork, from [`espup`](https://crates.io/crates/espup); `core` built from source |
+| `-C force-frame-pointers` | on | **off** — with it the fork's [LLVM](https://llvm.org/) fails to build `compiler_builtins`; `.cargo/config.toml` says why |
 
 Neither has an atomic compare-and-swap in the instruction set the framework is
 built for: load and store only.
 
-**The Xtensa peripheral access crate is pinned to an exact version.** `esp-hal`
+**The Xtensa peripheral access crate is pinned to an exact version.** [`esp-hal`](https://crates.io/crates/esp-hal)
 1.1.2 asks for `esp32s3 ^0.35`, and 0.35.3 renamed two `RTC_CNTL` fields
 `esp-hal` calls, so the build stops compiling inside somebody else's crate.
 `Cargo.toml` pins 0.35.2 under a renamed optional dependency — a bare
@@ -86,7 +86,7 @@ drop the pin.
 
 Three things that cost a build each:
 
-- `esp-backtrace` fails its own build script unless exactly one of `defmt` or
+- [`esp-backtrace`](https://crates.io/crates/esp-backtrace) fails its own build script unless exactly one of [`defmt`](https://defmt.ferrous-systems.com/) or
   `println` is enabled, and says so.
 - The link fails without `esp-hal`'s `linkall.x`, on undefined interrupt
   symbols the vector table names. It is asked for in `build.rs` rather than

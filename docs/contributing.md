@@ -6,13 +6,13 @@ What the firmware is and what it cannot do yet is [hardware.md](hardware.md);
 putting a first screen on a board is [tutorial.md](tutorial.md).
 
 `rust-toolchain.toml` pins the toolchain and `riscv32imc-unknown-none-elf`,
-so the X3 image builds on a fresh clone with nothing else. The Sticky is
+so the [X3](https://www.xteink.com/products/xteink-x3) image builds on a fresh clone with nothing else. The [Sticky](https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html) is
 Xtensa: `cargo install espup && espup install` puts the `esp` fork and its
 linker in place, `. ~/export-esp.sh` puts that linker on this shell's `PATH`,
 and every command for it goes through `cargo +esp`. Skip the source line and
 the build stops at ``linker `xtensa-esp32s3-elf-gcc` not found``; the gate
 hunts for it and a bare `cargo` line does not. Flashing either needs
-`espflash`.
+[`espflash`](https://crates.io/crates/espflash).
 
 ```bash
 cargo build --release --bin x3 --features x3 --target riscv32imc-unknown-none-elf
@@ -20,7 +20,7 @@ cargo build --release --bin x3 --features x3 --target riscv32imc-unknown-none-el
 ./build-and-test.sh all                    # the above, plus linking both images
 ```
 
-**Exactly one board feature at a time.** The chip is a feature of `esp-hal`,
+**Exactly one board feature at a time.** The chip is a feature of [`esp-hal`](https://crates.io/crates/esp-hal),
 so `--all-features` is two chips and fails inside `esp-metadata-generated`
 before this crate is reached; there is deliberately no `compile_error!` guard,
 because one could not fire first.
@@ -48,7 +48,7 @@ minutes for one board.
 Three things bite here more than anywhere else:
 
 - **Neither target has an atomic compare-and-swap.** Load and store only;
-  never `swap`, `fetch_or` or `compare_exchange`. The RISC-V clippy run is
+  never `swap`, `fetch_or` or `compare_exchange`. The RISC-V [clippy](https://github.com/rust-lang/rust-clippy) run is
   the only check that reaches the `no_std` paths before a build does.
 - **The heap is mostly framebuffer** — four fifths of it on the X3, leaving
   about 13 kB. `Panel` is leaked with the backend; a screen that buffers

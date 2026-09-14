@@ -1,25 +1,25 @@
 # Your first screen on an ESP32
 
-You have an Xteink X3 — 528×792 of e-ink at 257 ppi, four keys along the
-bottom and a page key on each edge, an ESP32-C3, no touchscreen. This puts a
+You have an [Xteink X3](https://www.xteink.com/products/xteink-x3) — 528×792 of e-ink at 257 ppi, four keys along the
+bottom and a page key on each edge, an [ESP32-C3](https://www.espressif.com/en/products/socs/esp32-c3), no touchscreen. This puts a
 screen on it, as far as a screen can go without a panel driver.
 
 It assumes you have written one for the simulator already;
 [the framework's tutorial](https://github.com/XPUI-Framework/xpui-framework/blob/main/docs/tutorial.md) is that, and
 nothing here repeats it. It follows [`xpui-rp2040`'s tutorial](https://github.com/XPUI-Framework/xpui-rp2040/blob/main/docs/tutorial.md)
-step for step, and says where an ESP32 differs from an RP2040. **What is
+step for step, and says where an ESP32 differs from an [RP2040](https://www.raspberrypi.com/products/rp2040/). **What is
 different on this board is the subject.**
 
-Every Rust block below is compiled by `cargo test` in `docs-test/`. The two
+Every [Rust](https://rust-lang.org/) block below is compiled by `cargo test` in `docs-test/`. The two
 device-only ones — the frame loop, which needs a HAL's clock, and the flash
 commands — are fenced `text`, and each says why it cannot be compiled here. The C3 is the board a reader can
-follow on stable Rust; the Sticky, an ESP32-S3, needs the `esp` fork and is
+follow on stable Rust; the [Sticky](https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html), an [ESP32-S3](https://www.espressif.com/en/products/socs/esp32-s3), needs the `esp` fork and is
 noted where it differs.
 
 ## Nothing about the screen changes
 
 That is the whole claim, so it goes first. This is a complete screen, and the
-same source runs in the simulator window, on a Badger, inside a C++ firmware,
+same source runs in the simulator window, on a [Badger](https://shop.pimoroni.com/products/badger-2040), inside a C++ firmware,
 and — once one of these panels has a driver — on an X3:
 
 ```rust
@@ -183,7 +183,7 @@ while app.is_running() {
 }
 ```
 
-Fenced `text` because it needs `esp-hal`'s clock and delay —
+Fenced `text` because it needs [`esp-hal`](https://crates.io/crates/esp-hal)'s clock and delay —
 [`src/frame.rs`](../src/frame.rs) is the compiled version, and it is this with
 the types filled in. Four things about it:
 
