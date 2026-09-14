@@ -3,7 +3,7 @@
 //! ESP32-C3, RISC-V, and the densest panel this framework describes: 528x792
 //! at 257 ppi, held portrait. A button board with no touchscreen, so it keeps
 //! the baseline chrome — its 40px list row is 3.9 mm, the smallest of the
-//! seven boards this framework describes, and deliberately so.
+//! eight boards this framework describes, and deliberately so.
 //!
 //! ```bash
 //! cargo build --release --bin x3 --features x3 --target riscv32imc-unknown-none-elf
