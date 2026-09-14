@@ -51,7 +51,9 @@ impl<const BYTES: usize> Panel<BYTES> {
     }
 
     /// How much ink is on the panel, reported over the serial port on every
-    /// repaint. Counted a byte at a time, because this runs per frame.
+    /// repaint.
+    ///
+    /// Counted a byte at a time, because this runs per frame.
     pub fn ink_count(&self) -> usize {
         let stride = self.stride();
         let used_bits = self.width as usize % 8;

@@ -27,7 +27,7 @@ gate is a member, so one `cargo test` reaches its tests.
 ```
 
 ```text
-format · file sizes · crates are tested · READMEs warn · prose is compiled · documented paths resolve · rustdoc links resolve · documented commands resolve · lint · tests · doctests · the prose compiles · the nested clippy config agrees · README sections · AGENTS.md · published crates deny missing_docs · comment blocks · comment narration
+format · file sizes · crates are tested · READMEs warn · prose is compiled · documented paths resolve · rustdoc links resolve · the reference mirrors rustdoc · documented commands resolve · lint · tests · doctests · the prose compiles · the nested clippy config agrees · README sections · AGENTS.md · published crates deny missing_docs · comment blocks · comment narration
 + the ESP32-C3 image links
 + the ESP32-S3 image links
 ```
@@ -47,6 +47,9 @@ note where the `esp` fork is not installed.
   only one that reads them, and it documents the library and the `x3`
   binary; `src/bin/sticky.rs` needs the Xtensa fork, so no rustdoc run reads
   its doc comments.
+- **`the reference mirrors rustdoc`** reads that board run's output, under
+  `target/riscv32imc-unknown-none-elf/doc/xpui_esp32`, never the empty host
+  one. With no board output it fails rather than skips.
 - **`the nested clippy config agrees`** — `docs-test/` is a workspace of its
   own, so `--workspace` reaches neither its lints nor its `clippy.toml`.
   `lint` names it explicitly and this stage keeps its config equal to the
@@ -90,6 +93,7 @@ note where the `esp` fork is not installed.
 | [`README.md`](README.md), [`docs-test/README.md`](docs-test/README.md) | their paths and commands resolve; neither carries a `rust` fence |
 | [`docs/README.md`](docs/README.md) | its paths resolve; the README-heading check exempts it, because it is the index of `docs/`, not a front page |
 | [`docs/tutorial.md`](docs/tutorial.md) | every `rust` fence is a doctest in `docs-test/`, mounted by `docs-test/src/lib.rs` |
+| [`docs/reference.md`](docs/reference.md) | `the reference mirrors rustdoc`, against the board's rustdoc; every `rust` fence is a doctest in `docs-test/`, mounted by `docs-test/src/lib.rs` |
 | [`docs/hardware.md`](docs/hardware.md) | its paths resolve, and nothing else: **no stage recomputes a number in it.** Every figure here is checked by hand: the framebuffer sizes against `xteink::X3` and `seeed::STICKY` in `xpui-boards`, the heap against `src/runtime.rs`, the PAC versions against `Cargo.toml`, and the SRAM against Espressif's datasheets |
 | [`docs/contributing.md`](docs/contributing.md) | every path and command it gives resolves; the umbrella command is `xpui-dev`'s |
 | `AGENTS.md` | the stage list above is compared to what the gate runs, in both modes |

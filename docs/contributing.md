@@ -41,7 +41,9 @@ The checks are listed in [`AGENTS.md`](../AGENTS.md) and implemented in
 [`xtask/`](../xtask/); `./build-and-test.sh fix` formats in place first.
 `all` additionally links both images — the Sticky's only where the fork is
 installed, and it says so otherwise. CI links neither; run `all` before
-pushing anything the linker could reject.
+pushing anything the linker could reject. CI lints the X3 on every run and
+never builds the Sticky: installing the fork for each pull request would cost
+minutes for one board.
 
 Three things bite here more than anywhere else:
 

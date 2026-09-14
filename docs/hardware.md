@@ -6,7 +6,7 @@ been run, and there is no panel driver — on purpose.
 
 [tutorial.md](tutorial.md) is how to put a screen on one of these boards;
 [contributing.md](contributing.md) is how a change to this firmware is made
-and reviewed.
+and reviewed; [reference.md](reference.md) is every public item.
 
 ## What runs, and what does not
 
@@ -22,8 +22,9 @@ marked rather than faked.
 ## Where the panel driver goes
 
 [`src/panel.rs`](../src/panel.rs) owns a one-bit framebuffer of the board's
-exact size and hands off at one function, `Panel::present`. **That is where a
-panel driver goes.** Every byte of the frame is in `Panel::bytes()`.
+exact size and hands off at one function, [`Panel::present`](reference.md#panelpresent).
+**That is where a panel driver goes.** Every byte of the frame is in
+[`Panel::bytes`](reference.md#panelbytes).
 
 No published Rust or C++ driver exists for these panels. The RP2040 boards
 could name `uc8151` and `mipidsi` because those are published crates; the X3
@@ -52,7 +53,7 @@ holds the driver and `panel.rs` goes away.
 
 | | |
 |---|---|
-| Heap | 64 kB, in [`src/runtime.rs`](../src/runtime.rs), from `esp-alloc` |
+| Heap | 64 kB, in [`src/runtime.rs`](../src/runtime.rs), from `esp-alloc`, handed over by [`init_heap`](reference.md#init_heap) |
 | The X3's framebuffer | 52,272 bytes, **inside the heap**: `Panel` is leaked with the backend |
 | The Sticky's | 48,000 bytes, likewise |
 | SRAM | 400 KB on the ESP32-C3, 512 KB on the ESP32-S3 |
@@ -69,7 +70,6 @@ has room.
 |---|---|---|
 | Architecture | RISC-V, `riscv32imc-unknown-none-elf` | Xtensa, `xtensa-esp32s3-none-elf` |
 | Toolchain | stable Rust, the pinned channel | the `esp` fork, from `espup`; `core` built from source |
-| CI | linted on every run; **linked by nobody but you**, because CI runs `check` and the link stages are under `all` | not built, and not mentioned: installing the fork per pull request would cost minutes for one board |
 | `-C force-frame-pointers` | on | **off** — with it the fork's LLVM fails to build `compiler_builtins`; `.cargo/config.toml` says why |
 
 Neither has an atomic compare-and-swap in the instruction set the framework is

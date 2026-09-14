@@ -11,10 +11,10 @@
 /// carries input. Raise it before adding a screen that buffers anything.
 const HEAP_SIZE: usize = 64 * 1024;
 
-/// Hands the allocator its memory. Call once, before anything allocates.
+/// Hands the allocator its memory.
 ///
-/// [`xpui::App::new`] allocates on its first line, so this is the first line
-/// of every binary here.
+/// Call it once, before anything allocates. [`xpui::App::new`] allocates on
+/// its first line, so this is the first line of every binary here.
 pub fn init_heap() {
     esp_alloc::heap_allocator!(size: HEAP_SIZE);
 }
