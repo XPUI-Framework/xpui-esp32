@@ -1652,7 +1652,7 @@ dependencies = [
 [[package]]
 name = "xpui"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-framework?branch=main#8d5ae9c0e98e7bfe390f30567403c3c71bd9b9f5"
+source = "git+https://github.com/XPUI-Framework/xpui-framework?branch=main#3f8a617618e6f364d08da1455e84129a85cd8455"
 
 [[package]]
 name = "xpui-boards-core"
@@ -1692,7 +1692,7 @@ dependencies = [
 [[package]]
 name = "xpui-chrome"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-chrome?branch=main#09bef54f7d57ae937e20e7ad07a6dc9cb0b0ce93"
+source = "git+https://github.com/XPUI-Framework/xpui-chrome?branch=main#2dae85999fe3e245ee62ff1d708e568951ba0e16"
 dependencies = [
  "xpui",
 ]
@@ -1700,7 +1700,7 @@ dependencies = [
 [[package]]
 name = "xpui-embedded-graphics"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-backends?branch=main#8527aff7327191c668c1e84a0d665a0f3e27945d"
+source = "git+https://github.com/XPUI-Framework/xpui-backends?branch=main#d71de2094ae310e2157e38f4031b40d480eb2fdf"
 dependencies = [
  "critical-section",
  "embedded-graphics",
@@ -1746,7 +1746,7 @@ dependencies = [
 [[package]]
 name = "xpui-screenshot"
 version = "0.1.0"
-source = "git+https://github.com/XPUI-Framework/xpui-backends?branch=main#8527aff7327191c668c1e84a0d665a0f3e27945d"
+source = "git+https://github.com/XPUI-Framework/xpui-backends?branch=main#d71de2094ae310e2157e38f4031b40d480eb2fdf"
 dependencies = [
  "embedded-graphics",
  "png",
