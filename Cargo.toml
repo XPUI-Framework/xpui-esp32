@@ -103,7 +103,7 @@ esp32s3-pac = { package = "esp32s3", version = "=0.35.2", optional = true }
 # says never to enable this in a *library* crate, because it leaks an unstable
 # surface to dependants; this is a firmware nothing depends on.
 esp-hal = { version = "1.1", features = ["unstable"] }
-esp-alloc = "0.10"
+esp-alloc = "0.11"
 # **`println` is not optional**: this crate's build script fails outright
 # unless exactly one of `defmt` or `println` is enabled, and says so.
 esp-backtrace = { version = "0.19", features = ["panic-handler", "println"] }
